@@ -1,8 +1,11 @@
+//hashset.js
 
-import { LinkedList } from "./linked-list.js";
-import { Node } from "./linked-list.js";
+import { LinkedList } from "./linked-list-for-hashset.js";
+import { Node } from "./linked-list-for-hashset.js";
 
-  class Hashmap {
+//Create a class HashSet that behaves the same as a HashMap but only contains keys with no values.
+
+class Hashset {
 
     constructor(capacity, loadfactor){
         this.capacity = capacity || 16;
@@ -10,21 +13,22 @@ import { Node } from "./linked-list.js";
         this.buckets = Array(this.capacity).fill(null);
     }
 
+
     #hash(key){
         let hashCode = 0;
-           
+        
         const primeNumber = 31;
         for (let i = 0; i < key.length; i++) {
-          hashCode = primeNumber * hashCode + key.charCodeAt(i);
-          hashCode = hashCode % this.capacity;
+        hashCode = primeNumber * hashCode + key.charCodeAt(i);
+        hashCode = hashCode % this.capacity;
         }
 
         return hashCode;
     } 
 
-    set(key, value){   
+    set(key){   
         //check loadFactor 
-        this.#checkLoadFactor();
+        this.#checkLoadFactor(this.size());
 
         //hash given key
         let hashCode = this.#hash(key);
@@ -42,32 +46,29 @@ import { Node } from "./linked-list.js";
             if (list.containsKey(key)){
                 let index = list.findKey(key); 
                 let node = list.at(index);
-                console.log(`Key '${key}' already exists. Updating value...`);
-                node.value = value;
+             
 
             //if key doesnt exist in list
             } else{
-                list.append(key, value);
-                console.log(myHashmap);
+                list.append(key);
+                console.log(myHashset);
             }
 
         //if bucket is empty
         } else if (this.buckets[hashCode] === null) {
             //create LL w/ head node & put in bucket
-            let firstNode = new Node(key, value, null);
+            let firstNode = new Node(key, null);
             let LL = new LinkedList(firstNode);
             this.buckets[hashCode] = LL; 
         }
     }
 
-    #checkLoadFactor(){
+    #checkLoadFactor(size){
         // calculate if your bucket has reached the load factor.
        
-            console.log('size / capacity: ', this.size() / this.capacity);
-
              // if size divided by capacity > loadFactor
             // grow buckets 
-            if (this.size() / this.capacity >= this.loadfactor){
+            if (size / this.capacity >= this.loadfactor){
                 this.#growBuckets();
             } 
             return;
@@ -76,24 +77,21 @@ import { Node } from "./linked-list.js";
     #growBuckets() {
         // creating a new array with a larger capacity 
         this.capacity = this.capacity * 2;
-
+        console.log('growbuckets called');
          //get all key, value pairs
-         let pairs = this.entries();
+         let item = this.keys();
 
          //clear buckets & change array length
         this.buckets = Array(this.capacity).fill(null);
 
-         //call set/ rehash  each pair 
-         for (let i = 0; i < pairs.length; i++){
-            let tempKey = pairs[i][0];
-            let tempValue = pairs[i][1];
-           this.set(tempKey, tempValue);
+         //call set/ rehash  each key 
+         for (let i = 0; i < item.length; i++){
+            let tempKey = item[i];
+           // let tempValue = pairs[i][1];
+           this.set(tempKey);
          }
     
     }
-
-  
-                
 
     get(key){
         //returns value that is assigned to the key.
@@ -117,7 +115,7 @@ import { Node } from "./linked-list.js";
             if (list.containsKey(key)){
                 let index = list.findKey(key); 
                 let node = list.at(index);
-                return node.value;
+                return `${node.key} found.`;
              } else {
                 //bucket not empty, but key not matching
                 return 'key does not exist';
@@ -143,8 +141,10 @@ import { Node } from "./linked-list.js";
        
     }
 
-    remove(key){ 
+    remove(key){  //*
         //if key is in hashmap, remove entry with the key and return true. If key isnt in hashmap, return false
+
+        //CURRENTLY SETS HEAD TO NULL INSTEAD OF REMOVING
 
         let hashCode = this.#hash(key);
 
@@ -159,17 +159,19 @@ import { Node } from "./linked-list.js";
 
             //find index of node with key, and last node
             let index = list.findKey(key); 
+            console.log('index:', index);
             let lastNode = list.last();
+            console.log('lastNode: ', lastNode);
         
             //if only one node, remove whole linked list
             if (index === 0 && list.at(index) === lastNode){
                 this.buckets[hashCode] = null;
-                console.log(myHashmap);
+                console.log(myHashset);
                 return;
             } else {
                 //remove node
-                list.removeAt(index);
-                console.log(myHashmap);
+                list.removeAt(index); //index = 0
+                console.log(myHashset);
             }
             return true;
         } return false;
@@ -189,6 +191,7 @@ import { Node } from "./linked-list.js";
             counter += size;
             }
         }
+        console.log(`${counter} keys in Hashset`);
         return counter;
     }
 
@@ -201,6 +204,7 @@ import { Node } from "./linked-list.js";
                 counter ++;
             }
         }
+        console.log(`${counter} non-empty buckets in Hashset`);
         return counter;
     }
 
@@ -233,80 +237,24 @@ import { Node } from "./linked-list.js";
         return allKeys.flat(Infinity);
     }
 
-    values(){
-        //returns an array containing all the values.
-        let allValues = [];
-
-        //loop through buckets
-        for (let i = 0; i < this.buckets.length; i++){
-
-            //if bucket contains linked list
-            if (this.buckets[i] !== null){
-
-            //get linked list
-           let list = this.buckets[i];
- 
-            //get all values, push values to array allValues
-            allValues.push(list.printValues());
-        }
-    }
-    return allValues.flat(Infinity);
-    }
-
-    entries(){ 
-        //entries() returns an array that contains each key, value pair. Example: [[firstKey, firstValue], [secondKey, secondValue]]
-        let allEntries = [];
-      
-        //loop through buckets
-        for (let i = 0; i < this.buckets.length; i++){
-
-            //if bucket is not empty
-            if (this.buckets[i] !== null){
-
-                //get linked list
-                let list = this.buckets[i];
-
-                //get key and value for each node in ll & put in array, 
-                allEntries.push(list.getKeysAndValues());
-            }
-        }
-        //JSON.stringify(allEntries.flat(1));
-        return allEntries.flat(1);
-    }
+    
 }
 
-  let myHashmap = new Hashmap();
-  console.log(myHashmap);
-  myHashmap.set('Kim', 'LeBherz');
-  myHashmap.set('bro', 'bro');
-  myHashmap.set('Josh', 'Lebherz');
-  myHashmap.set('Test', 'Test');
-  myHashmap.set('Beetle', 'Beetle');
-  myHashmap.set('Storm', 'Storm');
 
 
-
-
-
-
-
-// EXTRA CREDIT 
-//   class HashSet extends Hashmap {
-
-//     set(key){   
-
-//         this.buckets[this.hash(key)] = key;
-//     }
-    
-//   }
-
-//   let myHashSet = new HashSet();
-//   console.log(myHashSet);
+let myHashset = new Hashset();
+console.log(myHashset)
+myHashset.set('Kim');
+myHashset.set('bro');
+myHashset.set('Josh');
+myHashset.set('Test');
+myHashset.set('Beetle');
+myHashset.set('Storm');
 
 
 //Helper function to allow variables to be accessed in console
-window.myHashmap = myHashmap;
+window.myHashset = myHashset;
 const globalize = function(variables) {
     Object.entries(variables).forEach(([name, value]) => window[name] = value);
 };
-globalize({myHashmap});
+globalize({myHashset});

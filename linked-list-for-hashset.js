@@ -1,16 +1,18 @@
+//linked-list for hashset
+
 //linked list
 
 
- class LinkedList {
+class LinkedList {
     //can initialise a LL with a node set as head, or an empty LL
     constructor(node){
         this.head = node || null;
     }
 
-    append(key, value){ //*ADDS TO END* 
+    append(key){ //*ADDS TO END* 
         //if head = null, means ll is empty. Set value.next to null. Set head.next to value
         if (this.head == null){
-            this.prepend(key, value);
+            this.prepend(key);
         }
         //else
         //find node with nextNode == null
@@ -20,12 +22,12 @@
         }
         //set that nodes nextNode to new node
         //set new nodes next node to null
-        temp.nextNode = new Node(key, value, null);
+        temp.nextNode = new Node(key, null);
 
     }
 
-    prepend(key, value){ //*ADDS TO START* 
-        this.head = new Node(key, value, this.head);
+    prepend(key){ //*ADDS TO START* 
+        this.head = new Node(key, this.head);
     }
 
     size(){
@@ -95,16 +97,16 @@
         return false;
     }
 
-    containsValue(value){
-        let temp = this.head;
-        while (temp !== null){
-            if (temp.value == String(value)){
-                return true;
-            }
-            temp = temp.nextNode;
-        }
-        return false;
-    }
+    // containsValue(value){
+    //     let temp = this.head;
+    //     while (temp !== null){
+    //         if (temp.value == String(value)){
+    //             return true;
+    //         }
+    //         temp = temp.nextNode;
+    //     }
+    //     return false;
+    // }
 
     //returns the index of the node containing value, or null if not found.
     findKey(key){
@@ -120,18 +122,18 @@
         return `${key} not found`;
     }
 
-    findValue(value){
-        let temp = this.head;
-        let current_index = 0;
-        while (temp !== null) {
-            if(temp.value == value){
-                return current_index;
-            }
-            current_index++;
-            temp = temp.nextNode;
-        }
-        return `${value} not found`;
-    }
+    // findValue(value){
+    //     let temp = this.head;
+    //     let current_index = 0;
+    //     while (temp !== null) {
+    //         if(temp.value == value){
+    //             return current_index;
+    //         }
+    //         current_index++;
+    //         temp = temp.nextNode;
+    //     }
+    //     return `${value} not found`;
+    // }
 
 
     //toString represents your LinkedList objects as strings, so you can print them out and preview them in the console. The format should be: ( value ) -> ( value ) -> ( value ) -> null
@@ -139,7 +141,7 @@
         let temp = this.head;
         let stringo = '';
         while (temp !== null){
-            stringo += `${temp.value} -> `;
+            stringo += `${temp.key} -> `;
             temp = temp.nextNode;
         }
         stringo += `null`;
@@ -148,29 +150,38 @@
 
 
     //inserts a new node with the provided value at the given index.
-    insertAt(value, index){
-        let temp = this.head;
-        let current_index = 0;
 
-        while (temp !== null){
-            if(current_index == index){
-                let prev_node = this.at(index-1);
-                //set prev nodes next to new node
-                prev_node.nextNode = new Node(value,temp);
-                return;
-            }
-            current_index++;
-            temp = temp.nextNode;
-        }
+    //not sure about this for ll hashset 
 
-    }
+
+    // insertAt(value, index){
+    //     let temp = this.head;
+    //     let current_index = 0;
+
+    //     while (temp !== null){
+    //         if(current_index == index){
+    //             let prev_node = this.at(index-1);
+    //             //set prev nodes next to new node
+    //             prev_node.nextNode = new Node(value,temp);
+    //             return;
+    //         }
+    //         current_index++;
+    //         temp = temp.nextNode;
+    //     }
+
+    // }
 
     //removes the node at the given index.
     removeAt(index){
-        //if node is head
-        if (index === 0){
-            this.head = null;
-        } else {
+        //if node is head, check for nextNode 
+        
+        let next_node = this.at(index+1);
+        if (index === 0 && next_node){
+            //this.nextNode doesnt work
+            this.head = next_node;
+        // } else if (index === 0){
+        //     this.head = null;
+         } else {
             //get index of prevnode
             let prev_node = this.at(index-1);
             prev_node.nextNode = prev_node.nextNode.nextNode;
@@ -189,35 +200,34 @@
     }
 
       //prints all values in linked list
-      printValues(){
-        let temp = this.head;
-        let allValues = [];
-        while (temp !== null){
-            allValues.push(temp.value);
-            temp = temp.nextNode;
-        } return allValues;
-    }
+    //   printValues(){
+    //     let temp = this.head;
+    //     let allValues = [];
+    //     while (temp !== null){
+    //         allValues.push(temp.value);
+    //         temp = temp.nextNode;
+    //     } return allValues;
+    // }
 
-    getKeysAndValues(){
-        let temp = this.head;
-        let allKeysAndValues = [];
-        let tempArr = []
-        while (temp !== null){ 
-            tempArr = [];
-            tempArr.push(temp.key);
-            tempArr.push(temp.value);
-            allKeysAndValues.push(tempArr);
-            temp = temp.nextNode;
-        } return allKeysAndValues;
-    }
+    // getKeysAndValues(){
+    //     let temp = this.head;
+    //     let allKeysAndValues = [];
+    //     let tempArr = []
+    //     while (temp !== null){ 
+    //         tempArr = [];
+    //         tempArr.push(temp.key);
+    //         tempArr.push(temp.value);
+    //         allKeysAndValues.push(tempArr);
+    //         temp = temp.nextNode;
+    //     } return allKeysAndValues;
+    // }
 
 }
 
 //test that ?? allows value of key to be 0
  class Node {
-    constructor(key, value, nextNode){
+    constructor(key, nextNode){
        this.key = key ?? null;
-       this.value =  value ?? null;
        this.nextNode = nextNode ?? null;
     }
     
