@@ -28,8 +28,11 @@ The Odin Project // HashMap
  10. entries() returns an array that contains each key, value pair. Example: [[firstKey, firstValue], [secondKey, secondValue]]
 
 
-
+Extra Credit
+Create a class HashSet that behaves the same as a HashMap but only contains keys with no values.
    
 
  
 
+ISSUES:
+* When trying to set new Node with set and a string value that is a number eg '0', or '1', it will hash to that bucket number for number 0 - 9
